@@ -1,9 +1,11 @@
 // import logo from './logo.svg';
 import './App.css';
-import {MyName,WhoIAm,} from './components/component.js';
-import {Product} from './components/product';
-import Counter from './components/component.js';
-import {Input} from './components/input';
+// import {MyName,WhoIAm,} from './components/component.js';
+// import {Product} from './components/product';
+// import Counter from './components/component.js';
+import {ToDoApp} from './components/todoApp';
+import 'bootstrap/dist/css/bootstrap.min.css';
+// import { Button } from 'react-bootstrap';
 
 
 // function Greeting () {
@@ -37,45 +39,45 @@ import {Input} from './components/input';
 //   )
 // }
 
-let fruits = [
-  {
-    name: 'apple',
-    price: '1.5$',
-    description: 'golden apple',
-    icon: '🍎'
-  },
-  {
-    name: 'banana',
-    price: '1.5$',
-    description: 'bananas',
-    icon: '🍌'
-  },
-  {
-    name: 'avocado',
-    price: '2$',
-    description: 'grate avocado',
-    icon: '🥑'
-  },
-  {
-    name: 'apple',
-    price: '1.5$',
-    description: 'golden apple',
-    icon: '🍎'
-  }
-];
+// let fruits = [
+//   {
+//     name: 'apple',
+//     price: '1.5$',
+//     description: 'golden apple',
+//     icon: '🍎'
+//   },
+//   {
+//     name: 'banana',
+//     price: '1.5$',
+//     description: 'bananas',
+//     icon: '🍌'
+//   },
+//   {
+//     name: 'avocado',
+//     price: '2$',
+//     description: 'grate avocado',
+//     icon: '🥑'
+//   },
+//   {
+//     name: 'apple',
+//     price: '1.5$',
+//     description: 'golden apple',
+//     icon: '🍎'
+//   }
+// ];
 
-let li = fruits.map((fruit,index) => {
-  const {name,price,description,icon} = fruit;
-  return <li key={index}>
-      <Product 
-        name = {name}
-        price = {price}
-        description = {description}
-        icon = {icon}
-      />
-  </li>
-}
-);
+// let li = fruits.map((fruit,index) => {
+//   const {name,price,description,icon} = fruit;
+//   return <li key={index}>
+//       <Product 
+//         name = {name}
+//         price = {price}
+//         description = {description}
+//         icon = {icon}
+//       />
+//   </li>
+// }
+// );
 
 
 
@@ -85,9 +87,10 @@ function App() {
   
   
   return (
-    <div className="App">
-      <header>
-      <Input />
+    <div>
+    <ToDoApp />
+      {/*<header>
+      
       <Counter defaultValue={0}/>
 
       <Product price="100$" name=' Apple' description=' iphone X '/>
@@ -100,8 +103,8 @@ function App() {
       </ol>
 
       <Product price="150$" currency='500' name=' Apple' description=' iphone 11 '/>
-    
-      </header>
+      <Button variant="primary">Primary</Button>{' '}
+  </header>*/}
     </div>
   );
 }
