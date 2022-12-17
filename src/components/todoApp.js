@@ -1,6 +1,6 @@
 import { Component } from "react";
-import styles from "./css/todo_1.module.css";
-import { Container, Button, Form, Col, Row, InputGroup} from 'react-bootstrap';
+// import styles from "./css/todo_1.module.css";
+import { Container, Button, Form, Col, Row, InputGroup,Card} from 'react-bootstrap';
 
 
 
@@ -9,6 +9,7 @@ export class ToDoApp extends Component{
     state = {
         value: "",
         tasks: [],
+        checkedTasks: new Set(),
         show:  false,
     }
 
@@ -18,8 +19,7 @@ export class ToDoApp extends Component{
         });
     }
 
-    handleClick = () => {
-
+    addTasks = () => {
         const inputValue = {value: this.state.value.trim(), key: this.makeid(10),};
 
         if(!inputValue?.value){
@@ -40,67 +40,96 @@ export class ToDoApp extends Component{
          }
     }
 
+    toggleChange = (key) =>{
+
+      const data = new Set([...this.state.checkedTasks]);
+
+      data.has(key) ? data.delete(key) : data.add(key);
+
+      this.setState({
+        checkedTasks: data
+      });
+    }
+
     removeTasks = ({target}) => {
-       let key = target.dataset.key;
-       let filteredTasks = this.state.tasks.filter(task => task.key !== key);
-       
+       const key = target.dataset.key;
+       const filteredTasks = this.state.tasks.filter(task => task.key !== key);
+       const checkedTasks = this.state.checkedTasks;
+
+       checkedTasks.delete(key);
+
        this.setState({
             tasks: filteredTasks,
        });
     }
 
-    removeAllTasks = () => {
+    removeAllCheckedTasks = () => {
+
+        const tasks = this.state.tasks.filter((task) => {
+            // ete ka taski key checked tasksm petqa jnjenq dranq
+            return !this.state.checkedTasks.has(task.key);
+        });
+
         this.setState({
-            tasks: [],
-            show:  false,
+            checkedTasks: new Set(),
+            tasks,
+            show:  !!tasks.length,
        });
     }
-    
+
     render(){
-        
-        const li = this.state.tasks.map((el,index)=>{
+
+        const li = this.state.tasks.map((task,index)=>{
             return (
-                <div className='row mt-3' key={index}>
-                    <div className='d-flex justify-content-between col-6 mx-auto'>
-                        <li className={styles.liTasks} >{el.value}</li>
-                        <div className={'d-flex'}>
-                            <InputGroup.Checkbox/>
-                            <Button  onClick={this.removeTasks} variant="danger" data-key={el.key}>Remove Task</Button>
-                        </div>
-                   
-                        
-                    </div>
-                </div>
+                    <Col xl={2} lg={3} md={4} sm={6} xs={12} key={task.key} >
+                        <Card>
+
+                            <Card.Body>
+                                <div className="d-flex justify-content-between align-items-center">
+                                    <Card.Title>{task.value}</Card.Title>
+                                    <input type="checkbox" checked={this.state.checkedTasks.has(task.key)} onChange={() => this.toggleChange(task.key)}/>
+                                </div>
+                                    <Card.Text>
+                                        Some quick example text to build on the card title and make up the
+                                        bulk of the card's content.
+                                    </Card.Text>
+                                <Button data-key={task.key} onClick={this.removeTasks} disabled={this.state.checkedTasks.has(task.key)} variant="outline-danger">Delete</Button>
+                            </Card.Body>
+                        </Card>
+                    </Col>
                 );
         });
 
         return(
-        <Container>
-            <Form className={"col-8 offset-2 mt-2"}>
-                <Form.Group as={Row} className="mb-3" controlId="formPlaintextPassword">
-                    <Col lg="10">
-                        <Form.Control value={this.state.value} onChange={this.handleChange} type="text"/>
-                    </Col>
-                    <Col lg="2">
-                        <Button variant="success" onClick={this.handleClick}>Click me</Button>
-                    </Col>
-                </Form.Group>
-            </Form>
+            <Container>
+                <Col className="mt-3">
+                    <InputGroup className="mb-3">
+                        <Form.Control disabled={!!this.state.tasks.length && !!this.state.checkedTasks.size}
+                        placeholder="Add new task" onKeyDown={(e) =>  e.key === 'Enter' ? this.addTasks() : null} value={this.state.value} onChange={this.handleChange}
+                        />
+                        <Button variant="outline-primary" onClick={this.addTasks} id="button-addon2" disabled={this.state.tasks.length && this.state.checkedTasks.size}>
+                            Button
+                        </Button>
+                    </InputGroup>
+                </Col>
+                <Col>
+                    <ol className='row'>
+                        {li}
+                    </ol>
 
-            <ol className='mt-3'>
-                {li}
-                {this.state.show ? <Col className={"col-2 offset-5 mt-2"}><Button onClick={this.removeAllTasks}>Remove All</Button></Col> : null}
-            </ol>
-        </Container>
+                    {this.state.show ? <Col className={"col-2 offset-5 mt-2"}><Button disabled={!this.state.checkedTasks.size} onClick={this.removeAllCheckedTasks}>Remove Selected</Button></Col> : null}
+                </Col>
+            </Container>
+
         );
     }
 
 
-    makeid(length) {
+    makeid(length = 10) {
         let result           = '';
         let characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         let charactersLength = characters.length;
-        
+
         for ( let i = 0; i < length; i++ ) {
             result += characters.charAt(Math.floor(Math.random() * charactersLength));
         }
