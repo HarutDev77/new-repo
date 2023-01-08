@@ -2,15 +2,15 @@ import { Component } from "react";
 // import styles from "./css/todo_1.module.css";
 import { Container, Button, Form, Col, Row, InputGroup,Card} from 'react-bootstrap';
 import { AddTask } from "./addTask";
-
+import  Confirm  from "./confirm";
 
 export class ToDoApp extends Component{
 
     state = {
-        value: "",
         tasks: [],
         checkedTasks: new Set(),
         show:  false,
+        showModal: false
     }
 
     addTasks = (value) => {
@@ -68,8 +68,16 @@ export class ToDoApp extends Component{
             checkedTasks: new Set(),
             tasks,
             show:  !!tasks.length,
+            showModal: false
        });
     }
+
+    showModal = () => {
+        this.setState({
+            showModal: !this.state.showModal
+        })
+    }
+
 
     render(){
 
@@ -105,13 +113,18 @@ export class ToDoApp extends Component{
                         }
                     }
                 />
+                {this.state.showModal && <Confirm
+                    checkedTasksSize = {this.state.checkedTasks.size}
+                    confirmAction = {this.removeAllCheckedTasks}
+                    showModal={this.showModal}
+                />}
                 <Container>
                     <Col>
                         <ol className='row'>
                             {li}
                         </ol>
 
-                        {this.state.show ? <Col className={"col-2 offset-5 mt-2"}><Button disabled={!this.state.checkedTasks.size} onClick={this.removeAllCheckedTasks}>Remove Selected</Button></Col> : null}
+                        {this.state.show ? <Col className={"col-2 offset-5 mt-2"}><Button disabled={!this.state.checkedTasks.size} onClick={this.showModal}>Remove Selected</Button></Col> : null}
                     </Col>
                 </Container>
             </>
