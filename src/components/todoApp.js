@@ -1,7 +1,7 @@
 import { Component } from "react";
 // import styles from "./css/todo_1.module.css";
 import { Container, Button, Form, Col, Row, InputGroup,Card} from 'react-bootstrap';
-
+import { AddTask } from "./addTask";
 
 
 export class ToDoApp extends Component{
@@ -13,14 +13,8 @@ export class ToDoApp extends Component{
         show:  false,
     }
 
-    handleChange = (e) =>{
-        this.setState({
-            value: e.target.value,
-        });
-    }
-
-    addTasks = () => {
-        const inputValue = {value: this.state.value.trim(), key: this.makeid(10),};
+    addTasks = (value) => {
+        const inputValue = {value: value.trim(), key: this.makeid(10)};
 
         if(!inputValue?.value){
             return;
@@ -29,7 +23,7 @@ export class ToDoApp extends Component{
         const tasks = [...this.state.tasks];
         tasks.push(inputValue);
         this.setState({
-            value: '',
+            value: "",
             tasks: tasks,
         });
 
@@ -79,6 +73,7 @@ export class ToDoApp extends Component{
 
     render(){
 
+
         const li = this.state.tasks.map((task,index)=>{
             return (
                     <Col xl={2} lg={3} md={4} sm={6} xs={12} key={task.key} >
@@ -101,25 +96,25 @@ export class ToDoApp extends Component{
         });
 
         return(
-            <Container>
-                <Col className="mt-3">
-                    <InputGroup className="mb-3">
-                        <Form.Control disabled={!!this.state.tasks.length && !!this.state.checkedTasks.size}
-                        placeholder="Add new task" onKeyDown={(e) =>  e.key === 'Enter' ? this.addTasks() : null} value={this.state.value} onChange={this.handleChange}
-                        />
-                        <Button variant="outline-primary" onClick={this.addTasks} id="button-addon2" disabled={this.state.tasks.length && this.state.checkedTasks.size}>
-                            Button
-                        </Button>
-                    </InputGroup>
-                </Col>
-                <Col>
-                    <ol className='row'>
-                        {li}
-                    </ol>
+            <>
+                <AddTask
+                    checkedTasksSize = {this.state.checkedTasks.size}
+                    addTasks = {
+                        (value) => {
+                            this.addTasks(value);
+                        }
+                    }
+                />
+                <Container>
+                    <Col>
+                        <ol className='row'>
+                            {li}
+                        </ol>
 
-                    {this.state.show ? <Col className={"col-2 offset-5 mt-2"}><Button disabled={!this.state.checkedTasks.size} onClick={this.removeAllCheckedTasks}>Remove Selected</Button></Col> : null}
-                </Col>
-            </Container>
+                        {this.state.show ? <Col className={"col-2 offset-5 mt-2"}><Button disabled={!this.state.checkedTasks.size} onClick={this.removeAllCheckedTasks}>Remove Selected</Button></Col> : null}
+                    </Col>
+                </Container>
+            </>
 
         );
     }
