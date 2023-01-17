@@ -1,8 +1,15 @@
 import { Component } from "react";
-// import styles from "./css/todo_1.module.css";
-import { Container, Button, Form, Col, Row, InputGroup,Card} from 'react-bootstrap';
+import styles from "./css/todo_1.module.css";
+import { Container, Button, Col, Row, Card} from 'react-bootstrap';
 import { AddTask } from "./addTask";
 import  Confirm  from "./confirm";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {faPenSquare, faTrash} from '@fortawesome/free-solid-svg-icons'
+const remove = <FontAwesomeIcon icon={faPenSquare} />
+const deleteTask = <FontAwesomeIcon icon={faTrash} />
+
+
+
 
 export class ToDoApp extends Component{
 
@@ -10,21 +17,24 @@ export class ToDoApp extends Component{
         tasks: [],
         checkedTasks: new Set(),
         show:  false,
-        showModal: false
+        showModal: false,
+        showAddTask: false,
+        description: "",
+        key: 0
     }
 
-    addTasks = (value) => {
-        const inputValue = {value: value.trim(), key: this.makeid(10)};
+    addTasks = (title, description) => {
+        const inputValue = {title: title.trim(), description: description.trim(), key: this.makeid(10)};
 
-        if(!inputValue?.value){
+        if(!inputValue?.title){
             return;
         }
 
         const tasks = [...this.state.tasks];
         tasks.push(inputValue);
         this.setState({
-            value: "",
             tasks: tasks,
+            showAddTask: false
         });
 
         if(tasks.length > 0){
@@ -32,6 +42,24 @@ export class ToDoApp extends Component{
                 show:  true,
             });
          }
+    }
+    editTasks = (key, title, description) => {
+        const newTasks = [];
+        this.state.tasks.forEach((task)=>{
+
+            if(task.key === key){
+                task.title = title;
+                task.description = description;
+            }
+
+            newTasks.push(task);
+        });
+
+        this.setState({
+            tasks: newTasks,
+            key: 0,
+            showAddTask: false
+        });
     }
 
     toggleChange = (key) =>{
@@ -45,12 +73,15 @@ export class ToDoApp extends Component{
       });
     }
 
-    removeTasks = ({target}) => {
-       const key = target.dataset.key;
+    removeTasks = (key) => {
        const filteredTasks = this.state.tasks.filter(task => task.key !== key);
        const checkedTasks = this.state.checkedTasks;
 
        checkedTasks.delete(key);
+
+       if(!filteredTasks.length){
+           this.setState({show: false})
+       }
 
        this.setState({
             tasks: filteredTasks,
@@ -60,7 +91,7 @@ export class ToDoApp extends Component{
     removeAllCheckedTasks = () => {
 
         const tasks = this.state.tasks.filter((task) => {
-            // ete ka taski key checked tasksm petqa jnjenq dranq
+            // ete ka taski key checked tasksum petqa jnjenq dranq
             return !this.state.checkedTasks.has(task.key);
         });
 
@@ -78,25 +109,57 @@ export class ToDoApp extends Component{
         })
     }
 
+    showAddTask = () => {
+        this.setState({
+            showAddTask: true,
+            key: ''
+        });
+    }
+    dontAdd = () =>{
+        this.setState({
+            showAddTask: false
+        });
+    }
+
+    toggleCheckeds = (type='check') => {
+        let newCheckedTasks = [];
+        this.state.tasks.map((task)=>{
+           return newCheckedTasks.push(task.key);
+        });
+
+        type === 'uncheck' ? this.setState({
+            checkedTasks: new Set()
+        }) : this.setState({
+            checkedTasks: new Set(newCheckedTasks)
+        });
+    }
+
+    editTask = (key) => {
+
+        this.setState({
+            showAddTask: true,
+            key: key,
+        })
+    }
 
     render(){
 
 
-        const li = this.state.tasks.map((task,index)=>{
+        const li = this.state.tasks.map((task)=>{
             return (
                     <Col xl={2} lg={3} md={4} sm={6} xs={12} key={task.key} >
-                        <Card>
+                        <Card className={'mb-3'}>
 
                             <Card.Body>
                                 <div className="d-flex justify-content-between align-items-center">
-                                    <Card.Title>{task.value}</Card.Title>
+                                    <Card.Title>{task.title}</Card.Title>
                                     <input type="checkbox" checked={this.state.checkedTasks.has(task.key)} onChange={() => this.toggleChange(task.key)}/>
                                 </div>
                                     <Card.Text>
-                                        Some quick example text to build on the card title and make up the
-                                        bulk of the card's content.
+                                        {task.description}
                                     </Card.Text>
-                                <Button data-key={task.key} onClick={this.removeTasks} disabled={this.state.checkedTasks.has(task.key)} variant="outline-danger">Delete</Button>
+                                <Button  data-key={task.key} className={'m-1'} onClick={()=>this.editTask(task.key)} disabled={this.state.checkedTasks.has(task.key)} variant="outline-warning">{remove}</Button>
+                                <Button onClick={()=>this.removeTasks(task.key)} disabled={this.state.checkedTasks.has(task.key)} variant="outline-danger">{deleteTask}</Button>
                             </Card.Body>
                         </Card>
                     </Col>
@@ -105,14 +168,59 @@ export class ToDoApp extends Component{
 
         return(
             <>
-                <AddTask
-                    checkedTasksSize = {this.state.checkedTasks.size}
-                    addTasks = {
-                        (value) => {
-                            this.addTasks(value);
+                <Container>
+                    <Row>
+                        <Col
+                            xl={2} lg={2} md={3} sm={4} xs={4}
+                        >
+                            <Button
+                                variant={"primary"}
+                                className={`mt-3 mb-3 ${styles.btn_full}`}
+                                onClick={this.showAddTask}
+                            >
+                                Add new task
+                            </Button>
+                        </Col>
+                        <Col
+                            xl={2} lg={2} md={3} sm={3} xs={3}
+                        >
+                            <Button
+                                variant={"success"}
+                                className={`mt-3 mb-3 ${styles.btn_full}`}
+                                onClick={()=>this.toggleCheckeds('check')}
+                            >
+                                Check all
+                            </Button>
+                        </Col>
+                        <Col
+                            xl={2} lg={2} md={3} sm={3} xs={4}
+                        >
+                            <Button
+                                variant={"warning"}
+                                className={`mt-3 mb-3 ${styles.btn_full}`}
+                                onClick={()=>this.toggleCheckeds('uncheck')}
+                            >
+                                Uncheck all
+                            </Button>
+                        </Col>
+                    </Row>
+                </Container>
+                {this.state.showAddTask &&
+                    <AddTask
+                        data={ this.state.key ? this.state.tasks.filter(value => value.key === this.state.key) : []}
+                        dontAdd={()=>this.dontAdd()}
+                        addTasks = {
+                            (title, description) => {
+                                this.addTasks(title, description);
+                            }
                         }
-                    }
-                />
+                        editTasks = {
+                            (key, title, description) => {
+                                this.editTasks(key, title, description);
+                            }
+                        }
+
+                />}
                 {this.state.showModal && <Confirm
                     checkedTasksSize = {this.state.checkedTasks.size}
                     confirmAction = {this.removeAllCheckedTasks}
@@ -124,7 +232,7 @@ export class ToDoApp extends Component{
                             {li}
                         </ol>
 
-                        {this.state.show ? <Col className={"col-2 offset-5 mt-2"}><Button disabled={!this.state.checkedTasks.size} onClick={this.showModal}>Remove Selected</Button></Col> : null}
+                        {this.state.show ? <Col xl={2} lg={2} md={3} sm={4} xs={4} className={"col-2 offset-5 mt-2"}><Button disabled={!this.state.checkedTasks.size} onClick={this.showModal}>Remove Selected</Button></Col> : null}
                     </Col>
                 </Container>
             </>
