@@ -1,9 +1,8 @@
-import {Component} from "react";
+import { PureComponent } from "react";
 import {Container, Button, Modal, Form, Col, InputGroup, Row} from 'react-bootstrap';
 import styles from "./css/addTaskStile.module.css"
 
-export class AddTask extends Component {
-
+export class AddTask extends PureComponent {
     constructor(props) {
         super(props);
 
@@ -15,7 +14,6 @@ export class AddTask extends Component {
         }
     }
     handleChange = (value, type = 'title') => {
-
 
         // this.setState({
         //     [type]: value

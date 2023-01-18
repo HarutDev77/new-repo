@@ -1,4 +1,4 @@
-import { Component } from "react";
+import {PureComponent} from "react";
 import styles from "./css/todo_1.module.css";
 import { Container, Button, Col, Row, Card} from 'react-bootstrap';
 import { AddTask } from "./addTask";
@@ -11,7 +11,7 @@ const deleteTask = <FontAwesomeIcon icon={faTrash} />
 
 
 
-export class ToDoApp extends Component{
+export class ToDoApp extends PureComponent{
 
     state = {
         tasks: [],

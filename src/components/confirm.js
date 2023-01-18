@@ -1,3 +1,4 @@
+import {memo} from "react";
 import {Modal, Button} from 'react-bootstrap';
 import PropTypes from 'prop-types'
 
@@ -42,4 +43,4 @@ Confirm.propTypes = {
     showModal: PropTypes.func.isRequired,
 };
 
-export default Confirm;
+export default memo(Confirm);
